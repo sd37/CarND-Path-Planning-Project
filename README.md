@@ -19,11 +19,15 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 3. Compile: `cmake .. && make`
 4. Run it: `./path_planning`.
 
+## Link to Output:
+
+(https://youtu.be/7tVuTA42MK8)
+
 ## Reflections
 
 1. In main.cpp, we get data from the simulator. The simulator gives us back the sensor fusion data, along with the status of our self driving car(x,y,s,d,speed, yaw). 
 2. We compute the jerk minimizing trajectory inside main.cpp from (319-432). For this we try to do all of the computation in local car coordinate system, which requires a conversion.
-3. For the generation of the JMT path. We first pick some anchor points. 5 in size. 2 from the prev reported path from simulator and next 3 we generate ourselves which are 50m apart. See the lane parmeter from lines 356-363. This helps us pick points from the correct lane, when a lane change has to happen.
+3. For the generation of the JMT path. We first pick some anchor points. 5 in size. 2 from the prev reported path from simulator and next 3 we generate ourselves which are 50m apart. See the lane parameter from lines 356-363. This helps us pick points from the correct lane, when a lane change has to happen.
 4. Next we fit a spline to all the above points, and then upsample it so that we have 50 points for our path. See lines 410-431.
 5. Next we feed this generated path to the simulator after converting the points back to global map coordinate system.
 6. I implemented a behavior planning module, which takes into account the cars in other lanes, and the current speed of the car to decide which lane to change to.
