@@ -19,6 +19,23 @@ The highway's waypoints loop around so the frenet s value, distance along the ro
 3. Compile: `cmake .. && make`
 4. Run it: `./path_planning`.
 
+## Reflections
+
+1. In main.cpp, we get data from the simulator. The simulator gives us back the sensor fusion data, along with the status of our self driving car(x,y,s,d,speed, yaw). 
+2. We compute the jerk minimizing trajectory inside main.cpp from (319-432). For this we try to do all of the computation in local car coordinate system, which requires a conversion.
+3. For the generation of the JMT path. We first pick some anchor points. 5 in size. 2 from the prev reported path from simulator and next 3 we generate ourselves which are 50m apart. See the lane parmeter from lines 356-363. This helps us pick points from the correct lane, when a lane change has to happen.
+4. Next we fit a spline to all the above points, and then upsample it so that we have 50 points for our path. See lines 410-431.
+5. Next we feed this generated path to the simulator after converting the points back to global map coordinate system.
+6. I implemented a behavior planning module, which takes into account the cars in other lanes, and the current speed of the car to decide which lane to change to.
+7. See BehaviourPlanning.cpp file to see how it computes the safety of a lane change.
+8. In main.cpp if we see a car in front of us which is too_close we slow down. We then ask the behavior planner to tell us what lane should we change too.
+
+## Improvements
+
+1. Although this simple implementation works pretty well for 90% of the cases, I have seen it fail once or twice when a car from the other lane quickly moves into our lane. This causes our car to collide with that car because we do not slow down quickly enough. We could have a deaccelaration propotional to the distance between us and the car and in front of us.
+2. Sometimes when others car slow down they tend to change lanes, we can introduce Naive Bayes prediction module to detect those behaviors and help us gauge traffic better.
+
+
 Here is the data provided from the Simulator to the C++ Program
 
 #### Main car's localization Data (No Noise)
